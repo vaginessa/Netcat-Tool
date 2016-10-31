@@ -11,6 +11,8 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 
+import javax.security.auth.Destroyable;
+
 /**
  * Created by christian on 13.10.16.
  */
@@ -34,9 +36,16 @@ class Connection{
 	public boolean isActive(){
 		return active;
 	}
+	public void destroy(){
+		try {
+			sock.close();
+		}catch(IOException e){
+			//ignore
+		}
+	}
 }
 
-public class ConnectionManager {
+public class ConnectionManager implements Destroyable{
 	private ArrayList<Connection> list = new ArrayList<>();
 	private Semaphore lock = new Semaphore(1);
 
@@ -109,5 +118,23 @@ public class ConnectionManager {
 		}
 
 		return sock;
+	}
+
+	public void destroy(){
+		try {
+			lock.acquire();
+			for(Connection c : list){
+				c.destroy();
+			}
+			list.clear();
+		}catch(InterruptedException e){
+			// ignore
+		}finally {
+			lock.release();
+			lock = null;
+		}
+	}
+	public boolean isDestroyed(){
+		return lock == null;
 	}
 }

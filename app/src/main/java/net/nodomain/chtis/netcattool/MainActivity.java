@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 	private boolean startServer() {
 		startService(starter);
+		/*
 		serv_conn = new ServiceConnection() {
 			public void onServiceConnected(ComponentName className, IBinder service) {
 				serv = ((ServerService.LocalBinder) service).getService();
@@ -39,12 +40,14 @@ public class MainActivity extends AppCompatActivity {
 			}
 		};
 		return bindService(starter, serv_conn, BIND_AUTO_CREATE|BIND_NOT_FOREGROUND);
+		*/
+		return true;
 	}
 
 	private boolean stopServer() {
 		if (serv_conn != null) {
 			// Detach our existing connection.
-			unbindService(serv_conn);
+			//unbindService(serv_conn);
 			serv_conn = null;
 			stopService(starter);
 			serv = null;
